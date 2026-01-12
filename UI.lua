@@ -233,14 +233,12 @@ function Library:CreateWindow(config)
     MinimizeButton.MouseButton1Click:Connect(function()
         isMinimized = true
         
-        -- Ambil posisi Header (bagian atas MainFrame)
         MinimizedFrame.Position = UDim2.new(
-            MainFrame.Position.X.Scale,
-            MainFrame.Position.X.Offset,
-            MainFrame.Position.Y.Scale,
-            MainFrame.Position.Y.Offset  -- Posisi Y sama dengan MainFrame (bagian atas)
+            0,
+            Header.AbsolutePosition.X + Header.AbsoluteSize.X - MinimizedFrame.AbsoluteSize.X,
+            0,
+            Header.AbsolutePosition.Y
         )
-        
         MainFrame.Visible = false
         MinimizedFrame.Visible = true
     end)
