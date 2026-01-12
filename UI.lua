@@ -116,7 +116,7 @@ function Library:CreateWindow(config)
         Name = "MinimizeButton",
         Parent = Header,
         AnchorPoint = Vector2.new(1, 0.5),
-        Position = UDim2.new(1, -40, 0.5, 0),
+        Position = UDim2.new(1, -45, 0.5, 0),
         Size = UDim2.new(0, 30, 0, 30),
         BackgroundColor3 = Color3.fromRGB(40, 40, 42),
         Text = "−",
@@ -184,9 +184,9 @@ function Library:CreateWindow(config)
     
     local MinimizedFrame = CreateElement("Frame", {
         Name = "MinimizedFrame",
-        Parent = ScreenGui,
-        AnchorPoint = Vector2.new(1, 0),
-        Position = UDim2.new(1, -15, 0, 15),
+        Parent = MainFrame,
+        AnchorPoint = Vector2.new(0, 0),
+        Position = UDim2.new(0, 20, 0, 60),
         Size = UDim2.new(0, 200, 0, 45),
         BackgroundColor3 = Color3.fromRGB(32, 32, 34),
         BorderSizePixel = 0,
