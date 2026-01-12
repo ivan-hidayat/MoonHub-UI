@@ -185,10 +185,10 @@ function Library:CreateWindow(config)
     local MinimizedFrame = CreateElement("Frame", {
         Name = "MinimizedFrame",
         Parent = ScreenGui,
-        AnchorPoint = Vector2.new(1, 0),
+        AnchorPoint = Vector2.new(0, 0),
         Position = UDim2.new(1, -15, 0, 15),
-        Size = UDim2.new(0, 200, 0, 45),
-        BackgroundColor3 = Color3.fromRGB(32, 32, 34),
+        Size = UDim2.new(0, 250, 0, 50),
+        BackgroundColor3 = Color3.fromRGB(28, 28, 30),
         BorderSizePixel = 0,
         Visible = false
     })
@@ -200,25 +200,25 @@ function Library:CreateWindow(config)
     
     local MinimizedTitle = CreateElement("TextLabel", {
         Parent = MinimizedFrame,
-        Position = UDim2.new(0, 15, 0, 0),
-        Size = UDim2.new(1, -55, 1, 0),
+        Position = UDim2.new(0, 20, 0, 0),
+        Size = UDim2.new(1, -80, 1, 0),
         BackgroundTransparency = 1,
         Text = windowName,
         TextColor3 = Color3.fromRGB(240, 240, 240),
-        TextSize = 14,
+        TextSize = 16,
         TextXAlignment = Enum.TextXAlignment.Left,
-        Font = Enum.Font.GothamSemibold
+        Font = Enum.Font.GothamBold
     })
     
     local RestoreButton = CreateElement("TextButton", {
         Parent = MinimizedFrame,
         AnchorPoint = Vector2.new(1, 0.5),
-        Position = UDim2.new(1, -10, 0.5, 0),
-        Size = UDim2.new(0, 28, 0, 28),
+        Position = UDim2.new(1, -48, 0.5, 0),
+        Size = UDim2.new(0, 30, 0, 30),
         BackgroundColor3 = Color3.fromRGB(40, 40, 42),
         Text = "+",
         TextColor3 = Color3.fromRGB(220, 220, 220),
-        TextSize = 18,
+        TextSize = 20,
         Font = Enum.Font.GothamBold,
         BorderSizePixel = 0
     })
@@ -228,27 +228,45 @@ function Library:CreateWindow(config)
         CornerRadius = UDim.new(0, 6)
     })
     
+    local MinCloseButton = CreateElement("TextButton", {
+        Parent = MinimizedFrame,
+        AnchorPoint = Vector2.new(1, 0.5),
+        Position = UDim2.new(1, -15, 0.5, 0),
+        Size = UDim2.new(0, 30, 0, 30),
+        BackgroundColor3 = Color3.fromRGB(40, 40, 42),
+        Text = "×",
+        TextColor3 = Color3.fromRGB(220, 220, 220),
+        TextSize = 20,
+        Font = Enum.Font.GothamBold,
+        BorderSizePixel = 0
+    })
+    
+    CreateElement("UICorner", {
+        Parent = MinCloseButton,
+        CornerRadius = UDim.new(0, 6)
+    })
+    
     local isMinimized = false
     
     MinimizeButton.MouseButton1Click:Connect(function()
         isMinimized = true
         
-        local savedPos = MainFrame.Position
+        local mainAbsX = MainFrame.AbsolutePosition.X
+        local mainAbsY = MainFrame.AbsolutePosition.Y
         
-        MinimizedFrame.Position = UDim2.new(
-            savedPos.X.Scale,
-            savedPos.X.Offset + MainFrame.AbsoluteSize.X - MinimizedFrame.AbsoluteSize.X,
-            savedPos.Y.Scale,
-            savedPos.Y.Offset
-        )
+        MinimizedFrame.Position = UDim2.new(0, mainAbsX, 0, mainAbsY)
+        
         MainFrame.Visible = false
         MinimizedFrame.Visible = true
     end)
 
     RestoreButton.MouseButton1Click:Connect(function()
         isMinimized = false
-       
-        MainFrame.Position = MinimizedFrame.Position
+        
+        local offsetX = MainFrame.Size.X.Offset / 2
+        local offsetY = MainFrame.Size.Y.Offset / 2
+        
+        MainFrame.Position = MinimizedFrame.Position + UDim2.new(0, offsetX, 0, offsetY)
         
         MainFrame.Visible = true
         MinimizedFrame.Visible = false
@@ -258,10 +276,14 @@ function Library:CreateWindow(config)
         ScreenGui:Destroy()
     end)
     
+    MinCloseButton.MouseButton1Click:Connect(function()
+        ScreenGui:Destroy()
+    end)
+    
     local dragging = false
     local dragStart = nil
     local startPos = nil
-    
+
     Header.InputBegan:Connect(function(input)
         if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
             dragging = true
@@ -269,13 +291,13 @@ function Library:CreateWindow(config)
             startPos = MainFrame.Position
         end
     end)
-    
+
     Header.InputEnded:Connect(function(input)
         if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
             dragging = false
         end
     end)
-    
+
     UserInputService.InputChanged:Connect(function(input)
         if dragging and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
             local delta = input.Position - dragStart
@@ -287,10 +309,6 @@ function Library:CreateWindow(config)
             )
             
             MainFrame.Position = newPos
-            
-            if isMinimized then
-                MinimizedFrame.Position = newPos
-            end
         end
     end)
 
@@ -323,7 +341,6 @@ function Library:CreateWindow(config)
             )
             
             MinimizedFrame.Position = newPos
-            MainFrame.Position = newPos
         end
     end)
     
