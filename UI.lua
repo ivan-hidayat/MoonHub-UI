@@ -233,11 +233,13 @@ function Library:CreateWindow(config)
     MinimizeButton.MouseButton1Click:Connect(function()
         isMinimized = true
         
+        local savedPos = MainFrame.Position
+        
         MinimizedFrame.Position = UDim2.new(
-            0,
-            Header.AbsolutePosition.X + Header.AbsoluteSize.X - MinimizedFrame.AbsoluteSize.X,
-            0,
-            Header.AbsolutePosition.Y
+            savedPos.X.Scale,
+            savedPos.X.Offset + MainFrame.AbsoluteSize.X - MinimizedFrame.AbsoluteSize.X,
+            savedPos.Y.Scale,
+            savedPos.Y.Offset
         )
         MainFrame.Visible = false
         MinimizedFrame.Visible = true
