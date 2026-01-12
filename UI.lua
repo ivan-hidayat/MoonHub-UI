@@ -116,7 +116,7 @@ function Library:CreateWindow(config)
         Name = "MinimizeButton",
         Parent = Header,
         AnchorPoint = Vector2.new(1, 0.5),
-        Position = UDim2.new(1, -45, 0.5, 0),
+        Position = UDim2.new(1, -48, 0.5, 0),
         Size = UDim2.new(0, 30, 0, 30),
         BackgroundColor3 = Color3.fromRGB(40, 40, 42),
         Text = "−",
@@ -184,9 +184,9 @@ function Library:CreateWindow(config)
     
     local MinimizedFrame = CreateElement("Frame", {
         Name = "MinimizedFrame",
-        Parent = MainFrame,
-        AnchorPoint = Vector2.new(0, 0),
-        Position = UDim2.new(0, 20, 0, 60),
+        Parent = ScreenGui,
+        AnchorPoint = Vector2.new(1, 0),
+        Position = UDim2.new(1, -15, 0, 15),
         Size = UDim2.new(0, 200, 0, 45),
         BackgroundColor3 = Color3.fromRGB(32, 32, 34),
         BorderSizePixel = 0,
@@ -232,16 +232,28 @@ function Library:CreateWindow(config)
     
     MinimizeButton.MouseButton1Click:Connect(function()
         isMinimized = true
+        
+        -- Ambil posisi Header (bagian atas MainFrame)
+        MinimizedFrame.Position = UDim2.new(
+            MainFrame.Position.X.Scale,
+            MainFrame.Position.X.Offset,
+            MainFrame.Position.Y.Scale,
+            MainFrame.Position.Y.Offset  -- Posisi Y sama dengan MainFrame (bagian atas)
+        )
+        
         MainFrame.Visible = false
         MinimizedFrame.Visible = true
     end)
-    
+
     RestoreButton.MouseButton1Click:Connect(function()
         isMinimized = false
+       
+        MainFrame.Position = MinimizedFrame.Position
+        
         MainFrame.Visible = true
         MinimizedFrame.Visible = false
     end)
-    
+
     CloseButton.MouseButton1Click:Connect(function()
         ScreenGui:Destroy()
     end)
@@ -267,12 +279,51 @@ function Library:CreateWindow(config)
     UserInputService.InputChanged:Connect(function(input)
         if dragging and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
             local delta = input.Position - dragStart
-            MainFrame.Position = UDim2.new(
+            local newPos = UDim2.new(
                 startPos.X.Scale,
                 startPos.X.Offset + delta.X,
                 startPos.Y.Scale,
                 startPos.Y.Offset + delta.Y
             )
+            
+            MainFrame.Position = newPos
+            
+            if isMinimized then
+                MinimizedFrame.Position = newPos
+            end
+        end
+    end)
+
+    local minDragging = false
+    local minDragStart = nil
+    local minStartPos = nil
+
+    MinimizedFrame.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+            minDragging = true
+            minDragStart = input.Position
+            minStartPos = MinimizedFrame.Position
+        end
+    end)
+
+    MinimizedFrame.InputEnded:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+            minDragging = false
+        end
+    end)
+
+    UserInputService.InputChanged:Connect(function(input)
+        if minDragging and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
+            local delta = input.Position - minDragStart
+            local newPos = UDim2.new(
+                minStartPos.X.Scale,
+                minStartPos.X.Offset + delta.X,
+                minStartPos.Y.Scale,
+                minStartPos.Y.Offset + delta.Y
+            )
+            
+            MinimizedFrame.Position = newPos
+            MainFrame.Position = newPos
         end
     end)
     
